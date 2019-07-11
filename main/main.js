@@ -1,10 +1,8 @@
 'use strict';
-const fixture = require('../test/fixtures');
-const loadAllItems = fixture.loadAllItems;
-const loadPromotions = fixture.loadPromotions;
+// const fixture = require('../test/fixtures');
+// const loadAllItems = fixture.loadAllItems;
+// const loadPromotions = fixture.loadPromotions;
 
-//TODO: 请在该文件中实现练习要求并删除此注释
-// console.log(fixture.loadAllItems())
 
 const decodeBarcodes = tags => {
     const decodedBarcodes = [];
@@ -134,7 +132,7 @@ const printReceipt = tags =>{
     let items = decodeTags(tags);
     let receiptItems = calculatePrices(items);
     let receipt= renderReceipt(receiptItems);
-    return receipt;
+    console.log(receipt);
 }
 console.log(printReceipt([
     'ITEM000001',
@@ -147,4 +145,12 @@ console.log(printReceipt([
     'ITEM000005-2',
 ]))
 
-exports.decodeBarcodes = decodeBarcodes;
+console.log()
+console.log('\'***<没钱赚商店>收据***\n' +
+        '名称：雪碧，数量：5瓶，单价：3.00(元)，小计：15.00(元)\n' +
+        '名称：荔枝，数量：2.5斤，单价：15.00(元)，小计：37.50(元)\n' +
+        '名称：方便面，数量：3袋，单价：4.50(元)，小计：13.50(元)\n' +
+        '----------------------\n' +
+        '    总计：58.5(元)\n' +
+        '节省：7.5(元)\n' +
+        '**********************\'')
