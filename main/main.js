@@ -58,16 +58,6 @@ const decodeTags = tags=>{
     const decodedBarcodes = decodeBarcodes(tags);
     return combineItems(decodedBarcodes);
 }
-// console.log(decodeTags([
-//     'ITEM000001',
-//     'ITEM000001',
-//     'ITEM000001',
-//     'ITEM000001',
-//     'ITEM000001',
-//     'ITEM000003-2.5',
-//     'ITEM000005',
-//     'ITEM000005-2',
-// ]))
 
 
 const calculatePreferentialPrices = items => {
@@ -78,12 +68,17 @@ const calculatePreferentialPrices = items => {
         if (promotiontions[i].type == 'BUY_TWO_GET_ONE_FREE') {
             items.forEach(item => {
                 if (promotiontions[i].barcodes.indexOf(item.barcode) >= 0) {
-                    preferentialPrice = preferentialPrice +item.price * Math.floor(item.count / 3)
+                    preferentialPrice = preferentialPrice +item.price * Math.floor(item.count / 3);
+                    item.total = item.price * item.count - item.price * Math.floor(item.count / 3);
+                }else {
+                    item.total = item.price * item.count;
                 }
             });
         }
     }
-    return preferentialPrice;
+    console.log(items)
+
+    return {items:items,preferentialPrice:preferentialPrice};
 }
 
 const calculateOriginalPrices = items => {
@@ -95,16 +90,17 @@ const calculateOriginalPrices = items => {
 }
 
 const calculatePrices = items => {
-    const preferentialPrice = calculatePreferentialPrices(items);
+    const resultItems = calculatePreferentialPrices(items);
     const originPrice = calculateOriginalPrices(items);
+    resultItems.originPrice = originPrice;
 
-    return {items:items,preferentialPrice:preferentialPrice,originPrice:originPrice}
+    return resultItems;
 }
 
 const renderFooter = (originPrice, preferentialPrice)=>{
     return `----------------------
-总计：${originPrice - preferentialPrice}(元)
-节省：${preferentialPrice}(元)
+总计：${(originPrice - preferentialPrice).toFixed(2)}(元)
+节省：${preferentialPrice.toFixed(2)}(元)
 **********************`;
 }
 
@@ -113,10 +109,13 @@ const renderTitle = ()=>{
 }
 
 const renderItems = items=>{
+    console.log(items)
     let itemString = ``;
     items.forEach(item=>{
+        console.log(item)
+        console.log(item.total)
         itemString = `${itemString}
-名称：${item.name}，数量：${item.count}${item.unit}，单价：${item.price.toFixed(2)}(元)，小计：${(item.price*item.count).toFixed(2)}(元)`
+名称：${item.name}，数量：${item.count}${item.unit}，单价：${item.price.toFixed(2)}(元)，小计：${item.total.toFixed(2)}(元)`
     });
     return itemString;
 }
@@ -134,23 +133,5 @@ const printReceipt = tags =>{
     let receipt= renderReceipt(receiptItems);
     console.log(receipt);
 }
-console.log(printReceipt([
-    'ITEM000001',
-    'ITEM000001',
-    'ITEM000001',
-    'ITEM000001',
-    'ITEM000001',
-    'ITEM000003-2.5',
-    'ITEM000005',
-    'ITEM000005-2',
-]))
 
-console.log()
-console.log('\'***<没钱赚商店>收据***\n' +
-        '名称：雪碧，数量：5瓶，单价：3.00(元)，小计：15.00(元)\n' +
-        '名称：荔枝，数量：2.5斤，单价：15.00(元)，小计：37.50(元)\n' +
-        '名称：方便面，数量：3袋，单价：4.50(元)，小计：13.50(元)\n' +
-        '----------------------\n' +
-        '    总计：58.5(元)\n' +
-        '节省：7.5(元)\n' +
-        '**********************\'')
+
